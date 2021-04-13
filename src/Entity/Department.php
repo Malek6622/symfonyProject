@@ -7,13 +7,26 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints\DateTime;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 /**
  * @ORM\Entity(repositoryClass=DepartementRepository::class)
- * @ORM\HasLifecycleCallbacks
  */
 class Department
 {
+    use TimestampableEntity;
+
+    /**
+     * Department constructor.
+     */
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
+        $this->products = new ArrayCollection();
+        $this->createdAt = new DateTime();
+        $this->updatedAt = new DateTime();
+    }
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -27,31 +40,14 @@ class Department
     private $name;
 
     /**
-     * @var datetime $createdAt
-     * @ORM\Column(type="datetime")
-     */
-    private $createdAt;
-
-    /**
-     * @var datetime $updatedAt
-     * @ORM\Column(type="datetime")
-     */
-    private $updatedAt;
-
-    /**
-     * @ORM\OneToOne(targetEntity=ProductDepartment::class, mappedBy="idDepartment", cascade={"persist", "remove"})
-     */
-    private $productDepartment;
-
-    /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="idDepartment")
      */
     private $users;
 
-    public function __construct()
-    {
-        $this->users = new ArrayCollection();
-    }
+    /**
+     * @ORM\OneToMany(targetEntity=Product::class, mappedBy="departmentId")
+     */
+    private $products;
 
     public function getId(): ?int
     {
@@ -82,23 +78,6 @@ class Department
         return $this;
     }
 
-    /**
-     * @ORM\PrePersist
-     */
-    public function onPrePersist()
-    {
-        $this->createdAt = new DateTime("now");
-        $this->updatedAt = new DateTime("now");
-    }
-
-    /**
-     * @ORM\PreUpdate
-     */
-    public function onPreUpdate()
-    {
-        $this->updatedAt = new DateTime("now");
-    }
-
     public function getUpdatedAt(): ?\DateTimeInterface
     {
         return $this->updatedAt;
@@ -107,23 +86,6 @@ class Department
     public function setUpdatedAt(\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function getProductDepartment(): ?ProductDepartment
-    {
-        return $this->productDepartment;
-    }
-
-    public function setProductDepartment(ProductDepartment $productDepartment): self
-    {
-        // set the owning side of the relation if necessary
-        if ($productDepartment->getIdDepartment() !== $this) {
-            $productDepartment->setIdDepartment($this);
-        }
-
-        $this->productDepartment = $productDepartment;
 
         return $this;
     }
@@ -152,6 +114,36 @@ class Department
             // set the owning side to null (unless already changed)
             if ($user->getIdDepartment() === $this) {
                 $user->setIdDepartment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Product[]
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): self
+    {
+        if (!$this->products->contains($product)) {
+            $this->products[] = $product;
+            $product->setDepartmentId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): self
+    {
+        if ($this->products->removeElement($product)) {
+            // set the owning side to null (unless already changed)
+            if ($product->getDepartmentId() === $this) {
+                $product->setDepartmentId(null);
             }
         }
 

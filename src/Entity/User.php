@@ -3,16 +3,32 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints\DateTime;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @ORM\HasLifecycleCallbacks
+ * @UniqueEntity(fields="email", message="Email already taken")
  */
 class User implements UserInterface
 {
+    use TimestampableEntity;
+
+    /**
+     * User constructor.
+     */
+    public function __construct()
+    {
+        $this->products = new ArrayCollection();
+        $this->createdAt = new DateTime();
+        $this->updatedAt = new DateTime();
+    }
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -46,26 +62,14 @@ class User implements UserInterface
     private $cin;
 
     /**
-     * @var datetime $createdAt
-     * @ORM\Column(type="datetime")
-     */
-    private $createdAt;
-
-    /**
-     * @var datetime $updatedAt=
-     * @ORM\Column(type="datetime")
-     */
-    private $updatedAt;
-
-    /**
-     * @ORM\OneToOne(targetEntity=UserProduct::class, mappedBy="idUser", cascade={"persist", "remove"})
-     */
-    private $userProduct;
-
-    /**
      * @ORM\ManyToOne(targetEntity=department::class, inversedBy="users")
      */
     private $idDepartment;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Product::class, inversedBy="users")
+     */
+    private $products;
 
     public function getId(): ?int
     {
@@ -144,23 +148,6 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @ORM\PrePersist
-     */
-    public function onPrePersist()
-    {
-        $this->createdAt = new DateTime("now");
-        $this->updatedAt = new DateTime("now");
-    }
-
-    /**
-     * @ORM\PreUpdate
-     */
-    public function onPreUpdate()
-    {
-        $this->updatedAt = new DateTime("now");
-    }
-
     public function getUpdatedAt(): ?\DateTimeInterface
     {
         return $this->updatedAt;
@@ -169,23 +156,6 @@ class User implements UserInterface
     public function setUpdatedAt(\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function getUserProduct(): ?UserProduct
-    {
-        return $this->userProduct;
-    }
-
-    public function setUserProduct(UserProduct $userProduct): self
-    {
-        // set the owning side of the relation if necessary
-        if ($userProduct->getIdUser() !== $this) {
-            $userProduct->setIdUser($this);
-        }
-
-        $this->userProduct = $userProduct;
 
         return $this;
     }
@@ -215,5 +185,29 @@ class User implements UserInterface
     public function eraseCredentials()
     {
         // TODO: Implement eraseCredentials() method.
+    }
+
+    /**
+     * @return Collection|Product[]
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): self
+    {
+        if (!$this->products->contains($product)) {
+            $this->products[] = $product;
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): self
+    {
+        $this->products->removeElement($product);
+
+        return $this;
     }
 }
