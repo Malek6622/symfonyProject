@@ -6,11 +6,14 @@ use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Monolog\DateTimeImmutable;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
+
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
+ * @ORM\HasLifecycleCallbacks
  */
 class Product
 {
@@ -19,8 +22,8 @@ class Product
     public function __construct()
     {
         $this->users = new ArrayCollection();
-        $this->createdAt = new DateTime();
-        $this->updatedAt = new DateTime();
+        $this->createdAt = new \DatetimeImmutable();
+        $this->updatedAt = new \DatetimeImmutable();
     }
 
     /**
@@ -32,7 +35,7 @@ class Product
 
     /**
      * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="products")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $departmentId;
 
@@ -63,24 +66,24 @@ class Product
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): ?DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(\DatetimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeInterface
+    public function getUpdatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    public function setUpdatedAt(\DatetimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 

@@ -7,13 +7,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @UniqueEntity(fields="email", message="Email already taken")
+ * @ORM\HasLifecycleCallbacks
  */
 class User implements UserInterface
 {
@@ -25,8 +27,8 @@ class User implements UserInterface
     public function __construct()
     {
         $this->products = new ArrayCollection();
-        $this->createdAt = new DateTime();
-        $this->updatedAt = new DateTime();
+        $this->setCreatedAt(new \DatetimeImmutable());
+        $this->setUpdatedAt(new \DatetimeImmutable());
     }
 
     /**
@@ -52,7 +54,8 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @var Date|null $birthDate
+     * @ORM\Column(type="date", nullable = True)
      */
     private $birthDate;
 
@@ -107,17 +110,19 @@ class User implements UserInterface
 
     public function setPassword(string $password): self
     {
-        $this->password = $password;
+        if ($password) {
+            $this->password = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
+        }
 
         return $this;
     }
 
-    public function getBirthDate(): ?DateTimeInterface
+    public function getBirthDate(): ?Date
     {
         return $this->birthDate;
     }
 
-    public function setBirthDate(\DateTimeInterface $birthDate): self
+    public function setBirthDate(Date $birthDate): self
     {
         $this->birthDate = $birthDate;
 
@@ -136,24 +141,24 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): \DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(\DatetimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeInterface
+    public function getUpdatedAt(): \DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    public function setUpdatedAt(\DatetimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 

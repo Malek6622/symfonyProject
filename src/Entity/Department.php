@@ -11,6 +11,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 /**
  * @ORM\Entity(repositoryClass=DepartementRepository::class)
+ * @ORM\HasLifecycleCallbacks
  */
 class Department
 {
@@ -23,8 +24,8 @@ class Department
     {
         $this->users = new ArrayCollection();
         $this->products = new ArrayCollection();
-        $this->createdAt = new DateTime();
-        $this->updatedAt = new DateTime();
+        $this->createdAt = new \DatetimeImmutable();
+        $this->updatedAt = new \DatetimeImmutable();
     }
 
     /**
@@ -66,24 +67,24 @@ class Department
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): ?DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(\DatetimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeInterface
+    public function getUpdatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    public function setUpdatedAt(\DatetimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
