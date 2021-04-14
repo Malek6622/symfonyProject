@@ -24,8 +24,8 @@ class UserFixtures extends Fixture
     {
         for($i = 0; $i<10; $i++) {
             $user = new User();
-            $user->setEmail('user@gmail.com');
-            $user->setUsername('user');
+            $user->setEmail('user'.$i.'@gmail.com');
+            $user->setUsername('user'.$i);
             $this->addReference(self::USER_REFERENCE.$i, $user);
             $user->setIdDepartment($this->getReference('department-'.$i));
             $password = $this->encoder->encodePassword($user, '123');

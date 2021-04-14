@@ -18,8 +18,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
             $product= new Product();
             $this->addReference(self::PRODUCT_REFERENCE.$i, $product);
             $product->addUser($this->getReference('user-'.$i));
-            $product->setName('product');
-            $product->setDepartmentId(null);
+            $product->setName('product'.$i);
             $product->setCreatedAt(new \DatetimeImmutable());
             $product->setUpdatedAt(new \DatetimeImmutable());
             $product->setDepartmentId($this->getReference('department-'.$i));
