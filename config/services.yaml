@@ -25,7 +25,7 @@ services:
     App\Entity\User: ~
     Symfony\Component\Security\Core\User\UserInterface: '@App\Entity\User'
 
-    ws.listener.authentication_success_response:
-        class: App\EventListener\AuthenticationSuccessListener
+    App\EventListener\AuthenticationSuccessListener:
         tags:
-            - { name: kernel.event_listener, event: lexik_jwt_authentication.handler.authentication_success, method: onAuthenticationSuccessResponse, priority: -1 }
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.handler.authentication_success, method: onAuthenticationSuccessResponse }
+
