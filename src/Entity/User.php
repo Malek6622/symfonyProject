@@ -12,10 +12,10 @@ use Symfony\Component\Validator\Constraints\DateTime;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Entity(repositoryClass=UserRepository::class)
- * @ORM\HasLifecycleCallbacks
+ * @ORM\Entity(repositoryClass=UserRepository::class)=
  */
 class User implements UserInterface
 {
@@ -35,16 +35,19 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("group0")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("group0")
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("group0")
      */
     private $userName;
 
@@ -56,18 +59,35 @@ class User implements UserInterface
     /**
      * @var Date|null $birthDate
      * @ORM\Column(type="date", nullable = True)
+     * @Groups("group0")
      */
     private $birthDate;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("group0")
      */
     private $cin;
 
     /**
-     * @ORM\ManyToOne(targetEntity=department::class, inversedBy="users")
+     * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="users")
      */
     private $idDepartment;
+
+    /**
+     * @var string
+     */
+    protected $roles;
+
+    /**
+     * @var string
+     */
+    protected $user;
+
+    /**
+     * @var string
+     */
+    protected $salt;
 
     /**
      * @ORM\ManyToMany(targetEntity=Product::class, inversedBy="users")
@@ -141,7 +161,10 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getCreatedAt(): \DateTime
+    /**
+     * @return \DatetimeImmutable
+     */
+    public function getCreatedAt(): \DatetimeImmutable
     {
         return $this->createdAt;
     }
@@ -153,7 +176,10 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getUpdatedAt(): \DateTime
+    /**
+     * @return \DatetimeImmutable
+     */
+    public function getUpdatedAt(): \DatetimeImmutable
     {
         return $this->updatedAt;
     }
@@ -177,14 +203,66 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getRoles()
     {
-        // TODO: Implement getRoles() method.
+        return (array)$this->roles;
     }
 
-    public function getSalt()
+    /**
+     * @param string|null $roles
+     * @return User
+     */
+    public function setRoles(?string $roles)
     {
-        // TODO: Implement getSalt() method.
+        $this->roles = $roles;
+        return $this;
+    }
+
+    /**
+     * Get salt
+     *
+     * @return string
+     */
+    public function getSalt(): ?string
+    {
+        return $this->salt;
+    }
+
+    /**
+     * @param string|null $salt
+     * @return $this
+     */
+    public function setSalt(string $salt = null): self
+    {
+        $this->salt = $salt;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return null|string
+     */
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    /**
+     * Set device
+     *
+     * @param null|string $device
+     * @return User
+     */
+    public function setUser(?string $user): User
+    {
+        $this->user = $user;
+
+        return $this;
     }
 
     public function eraseCredentials()

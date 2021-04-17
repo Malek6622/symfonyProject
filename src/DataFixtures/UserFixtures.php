@@ -28,8 +28,7 @@ class UserFixtures extends Fixture
             $user->setUsername('user'.$i);
             $this->addReference(self::USER_REFERENCE.$i, $user);
             $user->setIdDepartment($this->getReference('department-'.$i));
-            $password = $this->encoder->encodePassword($user, '123');
-            $user->setPassword($password);
+            $user->setPassword('123');
             //$user->setBirthDate(new Date());
             $user->setCin('142257895');
             $user->setCreatedAt(new \DatetimeImmutable());
