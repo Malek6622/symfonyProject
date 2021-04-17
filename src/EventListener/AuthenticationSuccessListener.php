@@ -35,18 +35,19 @@ class AuthenticationSuccessListener
 
     public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $event)
     {
-        $data = [];
-        $data['id'] = $this->tokenStorage->getToken()->getUser()->getId();
-        $data['email'] = $this->tokenStorage->getToken()->getUser()->getEmail();
-        $data['userName'] = $this->tokenStorage->getToken()->getUser()->getUsername();
-        $data['cin'] = $this->tokenStorage->getToken()->getUser()->getCin();
-        $data['birthDate'] = $this->tokenStorage->getToken()->getUser()->getBirthDate();
-        $data['roles'] = $this->tokenStorage->getToken()->getUser()->getRoles();
-        $token = $event->getData();
+        $userData = [];
+        $userData['id'] = $this->tokenStorage->getToken()->getUser()->getId();
+        $userData['email'] = $this->tokenStorage->getToken()->getUser()->getEmail();
+        $userData['userName'] = $this->tokenStorage->getToken()->getUser()->getUsername();
+        $userData['cin'] = $this->tokenStorage->getToken()->getUser()->getCin();
+        $userData['birthDate'] = $this->tokenStorage->getToken()->getUser()->getBirthDate();
+        $userData['roles'] = $this->tokenStorage->getToken()->getUser()->getRoles();
+        $data['user'] = $userData;
+        $data['token'] = $event->getData()['token'];
         $event->setData([
             'code' => $event->getResponse()->getStatusCode(),
-            'user' => $data,
-            'token' => $token['token']
+            'message' =>'sucess',
+            'result' => [$data]
         ]);
 //        $response['token'] = $event->getData();
 //        $normalizer = new ObjectNormalizer($classMetadataFactory);
