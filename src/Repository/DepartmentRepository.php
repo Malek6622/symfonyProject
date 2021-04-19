@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Department;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -14,9 +15,57 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class DepartmentRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @var EntityManagerInterface
+     */
+    private $manager;
+
+    public function __construct(
+        ManagerRegistry $registry,
+        EntityManagerInterface $manager
+    )
     {
         parent::__construct($registry, Department::class);
+        $this->manager = $manager;
+    }
+
+    /**
+     * @param $data
+     * @return Department
+     */
+    public function saveDepartment($data)
+    {
+        $newDepartment = new Department();
+        $newDepartment
+            ->setName(($data['name']))
+        ;
+        $this->manager->persist($newDepartment);
+        $this->manager->flush();
+        return $newDepartment;
+    }
+
+    /**
+     * @param $department
+     * @param $data
+     * @return mixed
+     */
+    public function updateDepartment($department, $data)
+    {
+        $department
+            ->setName(($data['name']))
+        ;
+        $this->manager->persist($department);
+        $this->manager->flush();
+        return $department;
+    }
+
+    /**
+     * @param Department $department
+     */
+    public function removeDepartment(Department $department)
+    {
+        $this->manager->remove($department);
+        $this->manager->flush();
     }
 
     // /**

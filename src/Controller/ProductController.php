@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Configuration\ApiCodeResponse;
 use App\Factory\ApiResource;
 use App\Form\ProductType;
+use App\Repository\DepartmentRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Provider\JsonApiProvider;
@@ -17,12 +18,19 @@ class ProductController extends AbstractBaseController
      */
     private $productRepository;
 
+    /**
+     * @var DepartmentRepository
+     */
+    private $departmentRepository;
+
     public function __construct(
         JsonApiProvider $apiProvider,
-        ProductRepository $productRepository
+        ProductRepository $productRepository,
+        DepartmentRepository $departmentRepository
     ) {
         parent::__construct($apiProvider);
         $this->productRepository = $productRepository;
+        $this->departmentRepository = $departmentRepository;
     }
 
     /**
@@ -31,7 +39,8 @@ class ProductController extends AbstractBaseController
     public function create(Request $request)
     {
         $data = json_decode($request->getContent(), true);
-        $newProduct = $this->productRepository->saveProduct($data);
+        $department = $this->departmentRepository->findOneById($data['departmentId']);
+        $newProduct = $this->productRepository->saveProduct($data, $department);
         if (!$newProduct) {
             return $this->getApiProvider()->onFailure(
                 ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
@@ -47,9 +56,11 @@ class ProductController extends AbstractBaseController
      */
     public function update(Request $request, int $id)
     {
-        $product = $this->productRepository->findOneById($id);
         $data = json_decode($request->getContent(), true);
-        $updatedProduct = $this->productRepository->updateProduct($product, $data);
+        $product = $this->productRepository->findOneById($id);
+        $department = $this->departmentRepository->findOneById($data['departmentId']);
+        $data = json_decode($request->getContent(), true);
+        $updatedProduct = $this->productRepository->updateProduct($product, $data, $department);
         if (!$updatedProduct) {
             return $this->getApiProvider()->onFailure(
                 ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
@@ -95,9 +106,9 @@ class ProductController extends AbstractBaseController
     }
 
     /**
-     * @Route(path="/api/user/get", name="users_get", methods={"GET"})
+     * @Route(path="/api/product/get", name="products_get", methods={"GET"})
      */
-    public function getUsers()
+    public function getProducts()
     {
         $products = $this->productRepository->findAll();
         if (!$products) {

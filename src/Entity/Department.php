@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=DepartementRepository::class)
@@ -32,21 +33,25 @@ class Department
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("group2")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("group2")
      */
     private $name;
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="idDepartment")
+     * @Groups("group2")
      */
     private $users;
 
     /**
      * @ORM\OneToMany(targetEntity=Product::class, mappedBy="departmentId")
+     * @Groups("group2")
      */
     private $products;
 
