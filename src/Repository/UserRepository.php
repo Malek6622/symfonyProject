@@ -40,10 +40,11 @@ class UserRepository extends ServiceEntityRepository
      * @param $data
      * @return User
      */
-    public function saveUser($data)
+    public function saveUser($data, $department)
     {
         $newUser = new User();
         $newUser
+            ->setIdDepartment($department)
             ->setFirstName($data['firstName'])
             ->setEmail($data['email'])
             ->setPassword($data['password'])

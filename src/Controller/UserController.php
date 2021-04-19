@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Configuration\ApiCodeResponse;
 use App\Factory\ApiResource;
 use App\Form\UserType;
+use App\Repository\DepartmentRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Provider\JsonApiProvider;
@@ -17,12 +18,19 @@ class UserController extends AbstractBaseController
      */
     private $userRepository;
 
+    /**
+     * @var DepartmentRepository
+     */
+    private $departmentRepository;
+
     public function __construct(
         JsonApiProvider $apiProvider,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        DepartmentRepository $departmentRepository
     ) {
         parent::__construct($apiProvider);
         $this->userRepository = $userRepository;
+        $this->departmentRepository = $departmentRepository;
     }
 
     /**
@@ -31,7 +39,8 @@ class UserController extends AbstractBaseController
     public function create(Request $request)
     {
         $data = json_decode($request->getContent(), true);
-        $newUser = $this->userRepository->saveUser($data);
+        $department = $this->departmentRepository->findOneById($data['departmentId']);
+        $newUser = $this->userRepository->saveUser($data, $department);
         if (!$newUser) {
             return $this->getApiProvider()->onFailure(
                 ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
