@@ -15,7 +15,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Entity(repositoryClass=UserRepository::class)=
+ * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity("email", message="This port is already in use on that host.")
  */
 class User implements UserInterface
 {
@@ -40,8 +41,9 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      * @Groups("group0")
+     * @Assert\Email
      */
     private $email;
 
@@ -49,7 +51,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      * @Groups("group0")
      */
-    private $userName;
+    private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -57,11 +59,17 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @var Date|null $birthDate
-     * @ORM\Column(type="date", nullable = True)
+     * @ORM\Column(type="datetime", nullable = True)
      * @Groups("group0")
      */
     private $birthDate;
+
+    /**
+     * @var Integer|null
+     * @ORM\Column(type="integer", nullable = True)
+     * @Groups("group0")
+     */
+    private $phoneNumber;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -111,14 +119,14 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getUserName(): ?string
+    public function getFirstName(): ?string
     {
-        return $this->userName;
+        return $this->firstName;
     }
 
-    public function setUserName(string $userName): self
+    public function setFirstName(string $firstName): self
     {
-        $this->userName = $userName;
+        $this->firstName = $firstName;
 
         return $this;
     }
@@ -137,12 +145,12 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getBirthDate(): ?Date
+    public function getBirthDate(): ?DateTime
     {
         return $this->birthDate;
     }
 
-    public function setBirthDate(Date $birthDate): self
+    public function setBirthDate(DateTime $birthDate): ?self
     {
         $this->birthDate = $birthDate;
 
@@ -209,6 +217,16 @@ class User implements UserInterface
     public function getRoles()
     {
         return (array)$this->roles;
+    }
+
+    /**
+     * Get username
+     *
+     * @return string
+     */
+    public function getUsername(): ?string
+    {
+        return $this->getEmail();
     }
 
     /**
@@ -292,5 +310,21 @@ class User implements UserInterface
         $this->products->removeElement($product);
 
         return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getPhoneNumber(): ?int
+    {
+        return $this->phoneNumber;
+    }
+
+    /**
+     * @param int|null $phoneNumber
+     */
+    public function setPhoneNumber(?int $phoneNumber): void
+    {
+        $this->phoneNumber = $phoneNumber;
     }
 }

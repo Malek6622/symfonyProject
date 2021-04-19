@@ -19,7 +19,10 @@ security:
                 password_parameter: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-
+        api_offline:
+            pattern: ^/api/user/create
+            stateless: ~
+            anonymous: true
         api:
             pattern: ^/api
             stateless: true
@@ -35,4 +38,5 @@ security:
 
     access_control:
         - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/user/create, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
