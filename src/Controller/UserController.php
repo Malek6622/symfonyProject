@@ -2,20 +2,13 @@
 
 namespace App\Controller;
 
-use App\Application\Api\Exception\ApiException;
 use App\Configuration\ApiCodeResponse;
 use App\Factory\ApiResource;
 use App\Form\UserType;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Provider\JsonApiProvider;
 use App\Repository\UserRepository;
-use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface;
-use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 class UserController extends AbstractBaseController
 {
@@ -35,7 +28,7 @@ class UserController extends AbstractBaseController
     }
 
     /**
-     * @Route(path="api/user/create", name="user_create")
+     * @Route(path="api/user/create", name="user_create", methods={"POST"})
      */
     public function create(Request $request)
     {
@@ -52,7 +45,7 @@ class UserController extends AbstractBaseController
     }
 
     /**
-     * @Route(path="api/user/update", name="user_update")
+         * @Route(path="api/user/update", name="user_update", methods={"PUT"})
      */
     public function update(Request $request)
     {
@@ -86,7 +79,7 @@ class UserController extends AbstractBaseController
     }
 
     /**
-     * @Route(path="api/user/get/{id}", name="user_get")
+     * @Route(path="api/user/get/{id}", name="user_get", methods={"GET"})
      * @param int $id
      */
     public function getOneUser(int $id)
@@ -104,7 +97,7 @@ class UserController extends AbstractBaseController
     }
 
     /**
-     * @Route(path="/api/user/get", name="users_get")
+     * @Route(path="/api/user/get", name="users_get", methods={"GET"})
      */
     public function getUsers()
     {
