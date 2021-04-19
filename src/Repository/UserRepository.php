@@ -3,10 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Form\UserType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Validator\Constraints\Date;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -43,6 +45,7 @@ class UserRepository extends ServiceEntityRepository
     public function saveUser($data, $department)
     {
         $newUser = new User();
+        $newUser->setBirthDate(new \DateTime($data['birthDate']));
         $newUser
             ->setIdDepartment($department)
             ->setFirstName($data['firstName'])
@@ -51,6 +54,7 @@ class UserRepository extends ServiceEntityRepository
             ->setCin($data['cin'])
             ->setPhoneNumber($data['phoneNumber'])
             ;
+        $form = $this->createForm(UserType::class, $newUser);
         $this->manager->persist($newUser);
         $this->manager->flush();
         return $newUser;
@@ -63,6 +67,7 @@ class UserRepository extends ServiceEntityRepository
     public function updateUser($data)
     {
         $user = $this->tokenStorage->getToken()->getUser();
+        $user->setBirthDate(new \DateTime($data['birthDate']));
         $user
             ->setFirstName($data['firstName'])
             ->setPassword($data['password'])

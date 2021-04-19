@@ -4,13 +4,14 @@ namespace App\Controller;
 
 use App\Provider\JsonApiProvider;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-abstract class AbstractBaseController
+abstract class AbstractBaseController extends AbstractController
 {
     /**
      * @var JsonApiProvider

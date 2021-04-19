@@ -59,6 +59,7 @@ class User implements UserInterface
     private $password;
 
     /**
+     * @var string A "Y-m-d" formatted value
      * @ORM\Column(type="datetime", nullable = True)
      * @Groups("group0")
      */
@@ -144,18 +145,6 @@ class User implements UserInterface
         if ($password) {
             $this->password = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
         }
-
-        return $this;
-    }
-
-    public function getBirthDate(): ?DateTime
-    {
-        return $this->birthDate;
-    }
-
-    public function setBirthDate(DateTime $birthDate): ?self
-    {
-        $this->birthDate = $birthDate;
 
         return $this;
     }
@@ -329,5 +318,21 @@ class User implements UserInterface
     public function setPhoneNumber(?int $phoneNumber): void
     {
         $this->phoneNumber = $phoneNumber;
+    }
+
+    /**
+     * @return object|null
+     */
+    public function getBirthDate(): ?object
+    {
+        return $this->birthDate;
+    }
+
+    /**
+     * @param $birthDate
+     */
+    public function setBirthDate($birthDate): void
+    {
+        $this->birthDate = $birthDate;
     }
 }
