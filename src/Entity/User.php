@@ -79,11 +79,13 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="users")
+     * @Groups("group0")
      */
     private $idDepartment;
 
     /**
      * @var string
+     * @Groups("group0")
      */
     protected $roles;
 
@@ -99,6 +101,7 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToMany(targetEntity=Product::class, inversedBy="users")
+     * @Groups("group0")
      */
     private $products;
 

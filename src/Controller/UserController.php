@@ -17,8 +17,6 @@ class UserController extends AbstractBaseController
      */
     private $userRepository;
 
-    public $classMetadataFactory;
-
     public function __construct(
         JsonApiProvider $apiProvider,
         UserRepository $userRepository
@@ -45,7 +43,7 @@ class UserController extends AbstractBaseController
     }
 
     /**
-         * @Route(path="api/user/update", name="user_update", methods={"PUT"})
+     * @Route(path="api/user/update", name="user_update", methods={"PUT"})
      */
     public function update(Request $request)
     {

@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Monolog\DateTimeImmutable;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
-
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
@@ -30,22 +30,26 @@ class Product
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("group1")
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="products")
      * @ORM\JoinColumn(nullable=true)
+     * @Groups("group1")
      */
     private $departmentId;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("group1")
      */
     private $name;
 
     /**
      * @ORM\ManyToMany(targetEntity=User::class, mappedBy="products")
+     * @Groups("group1")
      */
     private $users;
 

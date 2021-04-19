@@ -36,6 +36,10 @@ class UserRepository extends ServiceEntityRepository
         $this->manager = $manager;
     }
 
+    /**
+     * @param $data
+     * @return User
+     */
     public function saveUser($data)
     {
         $newUser = new User();
@@ -51,6 +55,10 @@ class UserRepository extends ServiceEntityRepository
         return $newUser;
     }
 
+    /**
+     * @param $data
+     * @return string|\Stringable|\Symfony\Component\Security\Core\User\UserInterface
+     */
     public function updateUser($data)
     {
         $user = $this->tokenStorage->getToken()->getUser();
