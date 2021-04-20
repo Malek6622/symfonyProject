@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Configuration\ApiCodeResponse;
+use App\Entity\Department;
 use App\Factory\ApiResource;
 use App\Form\DepartmentType;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,7 +33,12 @@ class DepartmentController extends AbstractBaseController
     public function create(Request $request)
     {
         $data = json_decode($request->getContent(), true);
-        $newDepartment = $this->departmentRepository->saveDepartment($data);
+        $newDepartment = new Department();
+        $form = $this->createForm(DepartmentType::class, $newDepartment);
+        $form->submit($data);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($newDepartment);
+        $em->flush();
         if (!$newDepartment) {
             return $this->getApiProvider()->onFailure(
                 ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
@@ -48,9 +54,13 @@ class DepartmentController extends AbstractBaseController
      */
     public function update(Request $request, int $id)
     {
-        $department = $this->departmentRepository->findOneById($id);
+        $updatedDepartment = $this->departmentRepository->findOneById($id);
         $data = json_decode($request->getContent(), true);
-        $updatedDepartment = $this->departmentRepository->updateDepartment($department, $data);
+        $form = $this->createForm(DepartmentType::class, $updatedDepartment);
+        $form->submit($data);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($updatedDepartment);
+        $em->flush();
         if (!$updatedDepartment) {
             return $this->getApiProvider()->onFailure(
                 ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));

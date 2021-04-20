@@ -36,20 +36,20 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("group0")
+     * @Groups({"group2","group1","group0"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups("group0")
+     * @Groups({"group0","group1","group2"})
      * @Assert\Email
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("group0")
+     * @Groups({"group0","group1","group2"})
      */
     private $firstName;
 
@@ -80,7 +80,7 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="users")
-     * @Groups("group0")
+     *
      */
     private $idDepartment;
 
@@ -191,11 +191,20 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return department|null
+     *  @Groups("group0")
+     */
     public function getIdDepartment(): ?department
     {
         return $this->idDepartment;
     }
 
+    /**
+     * @param department|null $idDepartment
+     * @return $this
+     *
+     */
     public function setIdDepartment(?department $idDepartment): self
     {
         $this->idDepartment = $idDepartment;

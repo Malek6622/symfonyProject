@@ -30,38 +30,6 @@ class ProductRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $data
-     * @return Product
-     */
-    public function saveProduct($data, $department)
-    {
-        $newProduct = new Product();
-        $newProduct
-            ->setName(($data['name']))
-            ->setDepartmentId($department)
-        ;
-        $this->manager->persist($newProduct);
-        $this->manager->flush();
-        return $newProduct;
-    }
-
-    /**
-     * @param $product
-     * @param $data
-     * @return mixed
-     */
-    public function updateProduct($product, $data, $department)
-    {
-        $product
-            ->setName(($data['name']))
-            ->setDepartmentId($department)
-        ;
-        $this->manager->persist($product);
-        $this->manager->flush();
-        return $product;
-    }
-
-    /**
      * @param Product $product
      */
     public function removeProduct(Product $product)

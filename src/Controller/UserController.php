@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Configuration\ApiCodeResponse;
+use App\Entity\User;
 use App\Factory\ApiResource;
 use App\Form\UserType;
 use App\Repository\DepartmentRepository;
@@ -10,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Provider\JsonApiProvider;
 use App\Repository\UserRepository;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class UserController extends AbstractBaseController
 {
@@ -23,14 +25,21 @@ class UserController extends AbstractBaseController
      */
     private $departmentRepository;
 
+    /**
+     * @var TokenStorageInterface
+     */
+    protected $tokenStorage;
+
     public function __construct(
         JsonApiProvider $apiProvider,
         UserRepository $userRepository,
+        TokenStorageInterface $tokenStorage,
         DepartmentRepository $departmentRepository
     ) {
         parent::__construct($apiProvider);
         $this->userRepository = $userRepository;
         $this->departmentRepository = $departmentRepository;
+        $this->tokenStorage = $tokenStorage;
     }
 
     /**
@@ -40,7 +49,13 @@ class UserController extends AbstractBaseController
     {
         $data = json_decode($request->getContent(), true);
         $department = $this->departmentRepository->findOneById($data['departmentId']);
-        $newUser = $this->userRepository->saveUser($data, $department);
+        $newUser = new User();
+        $form = $this->createForm(UserType::class, $newUser);
+        $form->submit($data);
+        $newUser->setIdDepartment($department);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($newUser);
+        $em->flush();
         if (!$newUser) {
             return $this->getApiProvider()->onFailure(
                 ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
@@ -57,7 +72,14 @@ class UserController extends AbstractBaseController
     public function update(Request $request)
     {
         $data = json_decode($request->getContent(), true);
-        $updatedUser = $this->userRepository->updateUser($data);
+        $department = $this->departmentRepository->findOneById($data['departmentId']);
+        $updatedUser = $this->tokenStorage->getToken()->getUser();
+        $form = $this->createForm(UserType::class, $updatedUser);
+        $form->submit($data);
+        $updatedUser->setIdDepartment($department);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($updatedUser);
+        $em->flush();
         if (!$updatedUser) {
             return $this->getApiProvider()->onFailure(
                 ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
@@ -81,7 +103,6 @@ class UserController extends AbstractBaseController
             $this->userRepository->removeUser($user);
             return $this->getApiProvider()->onSuccess(
                 ApiResource::create(ApiCodeResponse::SUCCESS, 'user deleted', [], []));
-
         }
     }
 

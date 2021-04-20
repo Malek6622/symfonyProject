@@ -30,7 +30,7 @@ class Product
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("group1")
+     * @Groups({"group2","group1","group0"})
      */
     private $id;
 
@@ -43,7 +43,7 @@ class Product
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("group1")
+     * @Groups("group2","group1","group0")
      */
     private $name;
 

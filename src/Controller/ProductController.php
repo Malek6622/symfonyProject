@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Configuration\ApiCodeResponse;
+use App\Entity\Product;
 use App\Factory\ApiResource;
+use App\Form\DepartmentType;
 use App\Form\ProductType;
 use App\Repository\DepartmentRepository;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,7 +42,13 @@ class ProductController extends AbstractBaseController
     {
         $data = json_decode($request->getContent(), true);
         $department = $this->departmentRepository->findOneById($data['departmentId']);
-        $newProduct = $this->productRepository->saveProduct($data, $department);
+        $newProduct = new Product();
+        $form = $this->createForm(ProductType::class, $newProduct);
+        $form->submit($data);
+        $newProduct->setDepartmentId($department);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($newProduct);
+        $em->flush();
         if (!$newProduct) {
             return $this->getApiProvider()->onFailure(
                 ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
@@ -57,10 +65,14 @@ class ProductController extends AbstractBaseController
     public function update(Request $request, int $id)
     {
         $data = json_decode($request->getContent(), true);
-        $product = $this->productRepository->findOneById($id);
+        $updatedProduct = $this->productRepository->findOneById($id);
         $department = $this->departmentRepository->findOneById($data['departmentId']);
-        $data = json_decode($request->getContent(), true);
-        $updatedProduct = $this->productRepository->updateProduct($product, $data, $department);
+        $form = $this->createForm(ProductType::class, $updatedProduct);
+        $form->submit($data);
+        $updatedProduct->setDepartmentId($department);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($updatedProduct);
+        $em->flush();
         if (!$updatedProduct) {
             return $this->getApiProvider()->onFailure(
                 ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));

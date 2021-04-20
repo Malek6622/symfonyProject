@@ -13,7 +13,6 @@ class ProductType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('departmentId')
         ;
     }
 

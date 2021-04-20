@@ -30,36 +30,6 @@ class DepartmentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $data
-     * @return Department
-     */
-    public function saveDepartment($data)
-    {
-        $newDepartment = new Department();
-        $newDepartment
-            ->setName(($data['name']))
-        ;
-        $this->manager->persist($newDepartment);
-        $this->manager->flush();
-        return $newDepartment;
-    }
-
-    /**
-     * @param $department
-     * @param $data
-     * @return mixed
-     */
-    public function updateDepartment($department, $data)
-    {
-        $department
-            ->setName(($data['name']))
-        ;
-        $this->manager->persist($department);
-        $this->manager->flush();
-        return $department;
-    }
-
-    /**
      * @param Department $department
      */
     public function removeDepartment(Department $department)

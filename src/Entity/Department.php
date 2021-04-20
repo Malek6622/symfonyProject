@@ -33,13 +33,13 @@ class Department
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("group2")
+     * @Groups({"group2","group1","group0"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("group2")
+     * @Groups({"group2","group1","group0"})
      */
     private $name;
 
