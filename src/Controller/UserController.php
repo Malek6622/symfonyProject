@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Factory\ApiResource;
 use App\Form\UserType;
 use App\Repository\DepartmentRepository;
+use App\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Provider\JsonApiProvider;
@@ -26,6 +27,11 @@ class UserController extends AbstractBaseController
     private $departmentRepository;
 
     /**
+     * @var ProductRepository
+     */
+    private $productRepository;
+
+    /**
      * @var TokenStorageInterface
      */
     protected $tokenStorage;
@@ -34,12 +40,14 @@ class UserController extends AbstractBaseController
         JsonApiProvider $apiProvider,
         UserRepository $userRepository,
         TokenStorageInterface $tokenStorage,
-        DepartmentRepository $departmentRepository
+        DepartmentRepository $departmentRepository,
+        ProductRepository $productRepository
     ) {
         parent::__construct($apiProvider);
         $this->userRepository = $userRepository;
         $this->departmentRepository = $departmentRepository;
         $this->tokenStorage = $tokenStorage;
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -53,37 +61,52 @@ class UserController extends AbstractBaseController
         $form = $this->createForm(UserType::class, $newUser);
         $form->submit($data);
         $newUser->setIdDepartment($department);
+        foreach ($data['products'] as $idProduct) {
+            $product = $this->productRepository->findOneById($idProduct);
+            $product->addUser($newUser);
+            $newUser->addProduct($product);
+        }
         $em = $this->getDoctrine()->getManager();
         $em->persist($newUser);
         $em->flush();
-        if (!$newUser) {
-            return $this->getApiProvider()->onFailure(
-                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
-        } else {
-            $responseUser = $this->serialize($newUser, "group0");
-            return $this->getApiProvider()->onSuccess(
-                ApiResource::create(ApiCodeResponse::CREATED, 'user created', [$responseUser], []));
-        }
+        $responseUser = $this->serialize($newUser, "group0");
+        return $this->getApiProvider()->onSuccess(
+            ApiResource::create(ApiCodeResponse::CREATED, 'user created', [$responseUser], []));
+
     }
 
     /**
-     * @Route(path="api/user/update", name="user_update", methods={"PUT"})
+     * @Route(path="api/user/update/{id}", name="user_update", methods={"PUT"})
      */
-    public function update(Request $request)
+    public function update(Request $request, int $id)
     {
         $data = json_decode($request->getContent(), true);
         $department = $this->departmentRepository->findOneById($data['departmentId']);
-        $updatedUser = $this->tokenStorage->getToken()->getUser();
-        $form = $this->createForm(UserType::class, $updatedUser);
-        $form->submit($data);
-        $updatedUser->setIdDepartment($department);
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($updatedUser);
-        $em->flush();
+        $updatedUser = $this->userRepository->findOneById($id);
+        $userProductsIds = $this->userRepository->findProductIds($updatedUser->getId());
+        //securityByUser
         if (!$updatedUser) {
             return $this->getApiProvider()->onFailure(
                 ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
         } else {
+            $form = $this->createForm(UserType::class, $updatedUser);
+            $form->submit($data);
+            $updatedUser->setIdDepartment($department);
+            foreach ($userProductsIds as $userProductsId) {
+                $productToRemove = $this->productRepository->findOneById($userProductsId);
+                $updatedUser->removeProduct($productToRemove);
+                $productToRemove->removeUser($updatedUser);
+            }
+            foreach ($data['products'] as $idProduct) {
+                if (!in_array($idProduct, $userProductsIds)) {
+                    $productToAdd = $this->productRepository->findOneById($idProduct);
+                    $productToAdd->addUser($updatedUser);
+                    $updatedUser->addProduct($productToAdd);
+                }
+            }
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($updatedUser);
+            $em->flush();
             $responseUser = $this->serialize($updatedUser, "group0");
             return $this->getApiProvider()->onSuccess(
                 ApiResource::create(ApiCodeResponse::CREATED, 'user updated', [$responseUser], []));

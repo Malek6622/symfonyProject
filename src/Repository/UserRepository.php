@@ -36,6 +36,18 @@ class UserRepository extends ServiceEntityRepository
         $this->manager->flush();
     }
 
+    public function findProductIds($userId)
+    {
+        return $this->createQueryBuilder('u')
+            ->leftJoin('u.products', 'product')
+            ->select('product.id')
+            ->where('u.id = :val')
+            ->setParameter('val', $userId)
+            ->getQuery()
+            ->getArrayResult()
+            ;
+    }
+
     // /**
     //  * @return User[] Returns an array of User objects
     //  */
