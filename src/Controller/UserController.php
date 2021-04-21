@@ -61,6 +61,7 @@ class UserController extends AbstractBaseController
         $form = $this->createForm(UserType::class, $newUser);
         $form->submit($data);
         $newUser->setIdDepartment($department);
+        $newUser->setRoles('ROLE_USER');
         foreach ($data['products'] as $idProduct) {
             $product = $this->productRepository->findOneById($idProduct);
             $product->addUser($newUser);
@@ -92,6 +93,7 @@ class UserController extends AbstractBaseController
             $form = $this->createForm(UserType::class, $updatedUser);
             $form->submit($data);
             $updatedUser->setIdDepartment($department);
+            $updatedUser->setRoles('ROLE_USER');
             foreach ($userProductsIds as $userProductsId) {
                 $productToRemove = $this->productRepository->findOneById($userProductsId);
                 $updatedUser->removeProduct($productToRemove);

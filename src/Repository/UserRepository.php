@@ -36,6 +36,10 @@ class UserRepository extends ServiceEntityRepository
         $this->manager->flush();
     }
 
+    /**
+     * @param $userId
+     * @return int|mixed[]|string
+     */
     public function findProductIds($userId)
     {
         return $this->createQueryBuilder('u')

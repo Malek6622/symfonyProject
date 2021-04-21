@@ -28,7 +28,7 @@ class DepartmentController extends AbstractBaseController
     }
 
     /**
-     * @Route(path="api/department/create", name="department_create", methods={"POST"})
+     * @Route(path="api/admin/department/create", name="department_create", methods={"POST"})
      */
     public function create(Request $request)
     {
@@ -50,7 +50,7 @@ class DepartmentController extends AbstractBaseController
     }
 
     /**
-     * @Route(path="api/department/update/{id}", name="department_update", methods={"PUT"})
+     * @Route(path="api/admin/department/update/{id}", name="department_update", methods={"PUT"})
      */
     public function update(Request $request, int $id)
     {
@@ -72,7 +72,7 @@ class DepartmentController extends AbstractBaseController
     }
 
     /**
-     * @Route(path="api/department/delete/{id}", name="department_delete", methods={"DELETE"})
+     * @Route(path="api/admin/department/delete/{id}", name="department_delete", methods={"DELETE"})
      */
     public function delete(int $id)
     {

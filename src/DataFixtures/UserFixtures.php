@@ -25,12 +25,12 @@ class UserFixtures extends Fixture
         for($i = 0; $i<10; $i++) {
             $user = new User();
             $user->setEmail('user'.$i.'@gmail.com');
-            $user->setUsername('user'.$i);
+            $user->setFirstName('user'.$i);
             $this->addReference(self::USER_REFERENCE.$i, $user);
             $user->setIdDepartment($this->getReference('department-'.$i));
             $user->setPassword('123');
-            //$user->setBirthDate(new Date());
             $user->setCin('142257895');
+            $user->setRoles('ROLE_USER');
             $user->setCreatedAt(new \DatetimeImmutable());
             $user->setUpdatedAt(new \DatetimeImmutable());
             $manager->persist($user);

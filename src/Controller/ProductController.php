@@ -36,7 +36,7 @@ class ProductController extends AbstractBaseController
     }
 
     /**
-     * @Route(path="api/product/create", name="product_create", methods={"POST"})
+     * @Route(path="api/admin/product/create", name="product_create", methods={"POST"})
      */
     public function create(Request $request)
     {
@@ -60,7 +60,7 @@ class ProductController extends AbstractBaseController
     }
 
     /**
-     * @Route(path="api/product/update/{id}", name="product_update", methods={"PUT"})
+     * @Route(path="api/admin/product/update/{id}", name="product_update", methods={"PUT"})
      */
     public function update(Request $request, int $id)
     {
@@ -84,7 +84,7 @@ class ProductController extends AbstractBaseController
     }
 
     /**
-     * @Route(path="api/product/delete/{id}", name="product_delete", methods={"DELETE"})
+     * @Route(path="api/admin/product/delete/{id}", name="product_delete", methods={"DELETE"})
      */
     public function delete(int $id)
     {

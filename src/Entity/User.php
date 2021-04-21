@@ -86,6 +86,7 @@ class User implements UserInterface
 
     /**
      * @var string
+     * @ORM\Column(type="array")
      * @Groups("group0")
      */
     protected $roles;
