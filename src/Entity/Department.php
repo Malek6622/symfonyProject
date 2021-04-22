@@ -52,6 +52,7 @@ class Department
     /**
      * @ORM\OneToMany(targetEntity=Product::class, mappedBy="departmentId")
      * @Groups("group2")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $products;
 

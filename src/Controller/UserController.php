@@ -85,7 +85,6 @@ class UserController extends AbstractBaseController
         $department = $this->departmentRepository->findOneById($data['departmentId']);
         $updatedUser = $this->userRepository->findOneById($id);
         $userProductsIds = $this->userRepository->findProductIds($updatedUser->getId());
-        //securityByUser
         if (!$updatedUser) {
             return $this->getApiProvider()->onFailure(
                 ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));

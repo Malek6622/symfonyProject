@@ -38,6 +38,7 @@ class Product
      * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="products")
      * @ORM\JoinColumn(nullable=true)
      * @Groups("group1")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $departmentId;
 

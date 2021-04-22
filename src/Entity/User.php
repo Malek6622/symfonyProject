@@ -80,7 +80,7 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="users")
-     *
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $idDepartment;
 
