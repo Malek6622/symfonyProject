@@ -6,6 +6,8 @@ use App\Configuration\ApiCodeResponse;
 use App\Entity\Department;
 use App\Factory\ApiResource;
 use App\Form\DepartmentType;
+use App\Repository\ProductRepository;
+use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Provider\JsonApiProvider;

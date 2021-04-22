@@ -35,10 +35,9 @@ class Product
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="products")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="products", cascade={"remove"} )
+     * @ORM\JoinColumn(name="department_id_id", referencedColumnName="id", onDelete="CASCADE")
      * @Groups("group1")
-     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $departmentId;
 

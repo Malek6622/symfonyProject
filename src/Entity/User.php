@@ -79,8 +79,8 @@ class User implements UserInterface
     private $cin;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="users")
-     * @ORM\JoinColumn(onDelete="CASCADE")
+     * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="users", cascade={"remove"} )
+     * @ORM\JoinColumn(name="id_department_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $idDepartment;
 
