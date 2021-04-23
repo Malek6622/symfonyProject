@@ -15,8 +15,6 @@ class ApiCodeResponse
     public const INTERNAL_ERROR = 500;
     /** User status code */
     public const INVALID_PARAMETERS = 1000;
-    public const BAD_CREDENTIALS = 1001;
-    public const EXPIRED_TOKEN = 1002;
 
     /**
      * Get default status

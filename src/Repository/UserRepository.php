@@ -19,6 +19,11 @@ class UserRepository extends ServiceEntityRepository
      */
     private $manager;
 
+    /**
+     * UserRepository constructor.
+     * @param ManagerRegistry $registry
+     * @param EntityManagerInterface $manager
+     */
     public function __construct(
             ManagerRegistry $registry,
             EntityManagerInterface $manager
@@ -35,49 +40,5 @@ class UserRepository extends ServiceEntityRepository
         $this->manager->remove($user);
         $this->manager->flush();
     }
-
-    /**
-     * @param $userId
-     * @return int|mixed[]|string
-     */
-    public function findProductIds($userId)
-    {
-        return $this->createQueryBuilder('u')
-            ->leftJoin('u.products', 'product')
-            ->select('product.id')
-            ->where('u.id = :val')
-            ->setParameter('val', $userId)
-            ->getQuery()
-            ->getArrayResult()
-            ;
-    }
-
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?User
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
+

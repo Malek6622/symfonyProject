@@ -20,6 +20,11 @@ class DepartmentRepository extends ServiceEntityRepository
      */
     private $manager;
 
+    /**
+     * DepartmentRepository constructor.
+     * @param ManagerRegistry $registry
+     * @param EntityManagerInterface $manager
+     */
     public function __construct(
         ManagerRegistry $registry,
         EntityManagerInterface $manager
@@ -37,33 +42,4 @@ class DepartmentRepository extends ServiceEntityRepository
         $this->manager->remove($department);
         $this->manager->flush();
     }
-
-    // /**
-    //  * @return Departement[] Returns an array of Departement objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('d')
-            ->andWhere('d.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('d.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Departement
-    {
-        return $this->createQueryBuilder('d')
-            ->andWhere('d.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

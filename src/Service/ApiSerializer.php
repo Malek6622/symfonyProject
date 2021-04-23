@@ -10,7 +10,6 @@ use function count;
 
 class ApiSerializer
 {
-
     /**
      * @var SerializerInterface
      */

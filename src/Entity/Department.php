@@ -12,7 +12,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=DepartementRepository::class)
- * @ORM\HasLifecycleCallbacks
  */
 class Department
 {
@@ -44,13 +43,13 @@ class Department
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity=User::class, mappedBy="idDepartment")
+     * @ORM\OneToMany(targetEntity=User::class, mappedBy="department")
      * @Groups("group2")
      */
     private $users;
 
     /**
-     * @ORM\OneToMany(targetEntity=Product::class, mappedBy="departmentId")
+     * @ORM\OneToMany(targetEntity=Product::class, mappedBy="department")
      * @Groups("group2")
      */
     private $products;
@@ -117,7 +116,6 @@ class Department
     public function removeUser(User $user): self
     {
         if ($this->users->removeElement($user)) {
-            // set the owning side to null (unless already changed)
             if ($user->getIdDepartment() === $this) {
                 $user->setIdDepartment(null);
             }
@@ -147,7 +145,6 @@ class Department
     public function removeProduct(Product $product): self
     {
         if ($this->products->removeElement($product)) {
-            // set the owning side to null (unless already changed)
             if ($product->getDepartmentId() === $this) {
                 $product->setDepartmentId(null);
             }

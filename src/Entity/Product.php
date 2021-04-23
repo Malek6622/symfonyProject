@@ -36,10 +36,10 @@ class Product
 
     /**
      * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="products", cascade={"remove"} )
-     * @ORM\JoinColumn(name="department_id_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="department_id", referencedColumnName="id", onDelete="CASCADE")
      * @Groups("group1")
      */
-    private $departmentId;
+    private $department;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -94,18 +94,6 @@ class Product
         return $this;
     }
 
-    public function getDepartmentId(): ?Department
-    {
-        return $this->departmentId;
-    }
-
-    public function setDepartmentId(?Department $departmentId): self
-    {
-        $this->departmentId = $departmentId;
-
-        return $this;
-    }
-
     /**
      * @return Collection|User[]
      */
@@ -129,6 +117,25 @@ class Product
         if ($this->users->removeElement($user)) {
             $user->removeProduct($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDepartment() : ?Department
+    {
+        return $this->department;
+    }
+
+    /**
+     * @param Department|null $department
+     * @return $this
+     */
+    public function setDepartment(?Department $department): self
+    {
+        $this->department = $department;
 
         return $this;
     }

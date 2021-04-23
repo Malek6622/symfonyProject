@@ -58,18 +58,15 @@ class UserController extends AbstractBaseController
         $data = json_decode($request->getContent(), true);
         $department = $this->departmentRepository->findOneById($data['departmentId']);
         $newUser = new User();
-        $form = $this->createForm(UserType::class, $newUser);
-        $form->submit($data);
-        $newUser->setIdDepartment($department);
+        $newUser->setDepartment($department);
         $newUser->setRoles('ROLE_USER');
+
         foreach ($data['products'] as $idProduct) {
             $product = $this->productRepository->findOneById($idProduct);
             $product->addUser($newUser);
             $newUser->addProduct($product);
         }
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($newUser);
-        $em->flush();
+        $this->save(UserType::class, $data, $newUser);
         $responseUser = $this->serialize($newUser, "group0");
         return $this->getApiProvider()->onSuccess(
             ApiResource::create(ApiCodeResponse::CREATED, 'user created', [$responseUser], []));
@@ -84,30 +81,29 @@ class UserController extends AbstractBaseController
         $data = json_decode($request->getContent(), true);
         $department = $this->departmentRepository->findOneById($data['departmentId']);
         $updatedUser = $this->userRepository->findOneById($id);
-        $userProductsIds = $this->userRepository->findProductIds($updatedUser->getId());
         if (!$updatedUser) {
             return $this->getApiProvider()->onFailure(
-                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
+                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'user not found', [], []));
         } else {
-            $form = $this->createForm(UserType::class, $updatedUser);
-            $form->submit($data);
-            $updatedUser->setIdDepartment($department);
+            $userProducts = $updatedUser->getProducts();
+            $updatedUser->setDepartment($department);
             $updatedUser->setRoles('ROLE_USER');
-            foreach ($userProductsIds as $userProductsId) {
-                $productToRemove = $this->productRepository->findOneById($userProductsId);
-                $updatedUser->removeProduct($productToRemove);
-                $productToRemove->removeUser($updatedUser);
+            foreach ($userProducts as $userProduct) {
+                $updatedUser->removeProduct($userProduct);
+                $userProduct->removeUser($updatedUser);
             }
             foreach ($data['products'] as $idProduct) {
-                if (!in_array($idProduct, $userProductsIds)) {
-                    $productToAdd = $this->productRepository->findOneById($idProduct);
+                $productToAdd = $this->productRepository->findOneById($idProduct);
+                if (!$productToAdd) {
+                    return $this->getApiProvider()->onFailure(
+                        ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'product not found', [], []));
+                }
+                else {
                     $productToAdd->addUser($updatedUser);
                     $updatedUser->addProduct($productToAdd);
                 }
             }
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($updatedUser);
-            $em->flush();
+            $this->save(UserType::class, $data, $updatedUser);
             $responseUser = $this->serialize($updatedUser, "group0");
             return $this->getApiProvider()->onSuccess(
                 ApiResource::create(ApiCodeResponse::CREATED, 'user updated', [$responseUser], []));
@@ -122,7 +118,7 @@ class UserController extends AbstractBaseController
         $user = $this->userRepository->findOneById($id);
         if (!$user) {
             return $this->getApiProvider()->onFailure(
-                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
+                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'user not found', [], []));
         } else {
             $this->userRepository->removeUser($user);
             return $this->getApiProvider()->onSuccess(
@@ -139,7 +135,7 @@ class UserController extends AbstractBaseController
         $user = $this->userRepository->findOneById($id);
         if (!$user) {
             return $this->getApiProvider()->onFailure(
-                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
+                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'user not found', [], []));
         }
         else {
             $responseUser = $this->serialize($user, "group0");

@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Configuration\ApiCodeResponse;
 use App\Entity\Product;
 use App\Factory\ApiResource;
-use App\Form\DepartmentType;
 use App\Form\ProductType;
 use App\Repository\DepartmentRepository;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,15 +42,11 @@ class ProductController extends AbstractBaseController
         $data = json_decode($request->getContent(), true);
         $department = $this->departmentRepository->findOneById($data['departmentId']);
         $newProduct = new Product();
-        $form = $this->createForm(ProductType::class, $newProduct);
-        $form->submit($data);
-        $newProduct->setDepartmentId($department);
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($newProduct);
-        $em->flush();
+        $newProduct->setDepartment($department);
+        $this->save(ProductType::class, $data, $newProduct);
         if (!$newProduct) {
             return $this->getApiProvider()->onFailure(
-                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
+                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'Product not found', [], []));
         } else {
             $responseProduct = $this->serialize($newProduct, "group1");
             return $this->getApiProvider()->onSuccess(
@@ -67,15 +62,11 @@ class ProductController extends AbstractBaseController
         $data = json_decode($request->getContent(), true);
         $updatedProduct = $this->productRepository->findOneById($id);
         $department = $this->departmentRepository->findOneById($data['departmentId']);
-        $form = $this->createForm(ProductType::class, $updatedProduct);
-        $form->submit($data);
-        $updatedProduct->setDepartmentId($department);
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($updatedProduct);
-        $em->flush();
+        $updatedProduct->setDepartment($department);
+        $this->save(ProductType::class, $data, $updatedProduct);
         if (!$updatedProduct) {
             return $this->getApiProvider()->onFailure(
-                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
+                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'Product not found', [], []));
         } else {
             $responseProduct = $this->serialize($updatedProduct, "group1");
             return $this->getApiProvider()->onSuccess(
@@ -91,7 +82,7 @@ class ProductController extends AbstractBaseController
         $product = $this->productRepository->findOneById($id);
         if (!$product) {
             return $this->getApiProvider()->onFailure(
-                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
+                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'Product not found', [], []));
         } else {
             $this->productRepository->removeProduct($product);
             return $this->getApiProvider()->onSuccess(
@@ -108,7 +99,7 @@ class ProductController extends AbstractBaseController
         $product = $this->productRepository->findOneById($id);
         if (!$product) {
             return $this->getApiProvider()->onFailure(
-                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
+                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'Product not found', [], []));
         }
         else {
             $responseProduct = $this->serialize($product, "group1");

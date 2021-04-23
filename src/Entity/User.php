@@ -3,20 +3,21 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\DateType;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints\Date;
-use Symfony\Component\Validator\Constraints\DateTime;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @UniqueEntity("email", message="This port is already in use on that host.")
+ * @UniqueEntity("email", message="This email address is already in use on that host.")
  */
 class User implements UserInterface
 {
@@ -80,9 +81,9 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="users", cascade={"remove"} )
-     * @ORM\JoinColumn(name="id_department_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="department_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    private $idDepartment;
+    private $department;
 
     /**
      * @var string
@@ -188,27 +189,6 @@ class User implements UserInterface
     public function setUpdatedAt(\DatetimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    /**
-     * @return department|null
-     *  @Groups("group0")
-     */
-    public function getIdDepartment(): ?department
-    {
-        return $this->idDepartment;
-    }
-
-    /**
-     * @param department|null $idDepartment
-     * @return $this
-     *
-     */
-    public function setIdDepartment(?department $idDepartment): self
-    {
-        $this->idDepartment = $idDepartment;
 
         return $this;
     }
@@ -331,9 +311,9 @@ class User implements UserInterface
     }
 
     /**
-     * @return object|null
+     * @return string
      */
-    public function getBirthDate(): ?object
+    public function getBirthDate()
     {
         return $this->birthDate;
     }
@@ -341,8 +321,27 @@ class User implements UserInterface
     /**
      * @param $birthDate
      */
-    public function setBirthDate($birthDate): void
+    public function setBirthDate($birthDate)
     {
-        $this->birthDate = $birthDate;
+        $this->birthDate = date_format($birthDate, 'Y-m-d');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDepartment() : ?Department
+    {
+        return $this->department;
+    }
+
+    /**
+     * @param Department|null $department
+     * @return $this
+     */
+    public function setDepartment(?Department $department): self
+    {
+        $this->department = $department;
+
+        return $this;
     }
 }

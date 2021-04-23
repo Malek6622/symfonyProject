@@ -96,4 +96,13 @@ abstract class AbstractBaseController extends AbstractController
         $response = $serializer->normalize($data, null, ['groups' => $groups]);
         return $response;
     }
+
+    public function save($classe, $data, $object)
+    {
+        $form = $this->createForm($classe, $object);
+        $form->submit($data);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($object);
+        $em->flush();
+    }
 }

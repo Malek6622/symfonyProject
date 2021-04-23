@@ -6,8 +6,6 @@ use App\Configuration\ApiCodeResponse;
 use App\Entity\Department;
 use App\Factory\ApiResource;
 use App\Form\DepartmentType;
-use App\Repository\ProductRepository;
-use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Provider\JsonApiProvider;
@@ -36,14 +34,10 @@ class DepartmentController extends AbstractBaseController
     {
         $data = json_decode($request->getContent(), true);
         $newDepartment = new Department();
-        $form = $this->createForm(DepartmentType::class, $newDepartment);
-        $form->submit($data);
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($newDepartment);
-        $em->flush();
+        $this->save(DepartmentType::class, $data, $newDepartment);
         if (!$newDepartment) {
             return $this->getApiProvider()->onFailure(
-                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
+                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'Department not found', [], []));
         } else {
             $responseDepartment = $this->serialize($newDepartment, "group2");
             return $this->getApiProvider()->onSuccess(
@@ -58,14 +52,10 @@ class DepartmentController extends AbstractBaseController
     {
         $updatedDepartment = $this->departmentRepository->findOneById($id);
         $data = json_decode($request->getContent(), true);
-        $form = $this->createForm(DepartmentType::class, $updatedDepartment);
-        $form->submit($data);
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($updatedDepartment);
-        $em->flush();
+        $this->save(DepartmentType::class, $data, $updatedDepartment);
         if (!$updatedDepartment) {
             return $this->getApiProvider()->onFailure(
-                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
+                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'Department not found', [], []));
         } else {
             $responseDepartment = $this->serialize($updatedDepartment, "group2");
             return $this->getApiProvider()->onSuccess(
@@ -81,7 +71,7 @@ class DepartmentController extends AbstractBaseController
         $department = $this->departmentRepository->findOneById($id);
         if (!$department) {
             return $this->getApiProvider()->onFailure(
-                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
+                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'Department not found', [], []));
         } else {
             $this->departmentRepository->removeDepartment($department);
             return $this->getApiProvider()->onSuccess(
@@ -98,7 +88,7 @@ class DepartmentController extends AbstractBaseController
         $department = $this->departmentRepository->findOneById($id);
         if (!$department) {
             return $this->getApiProvider()->onFailure(
-                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'not found resource', [], []));
+                ApiResource::create(ApiCodeResponse::NOT_FOUND_RESOURCE, 'Department not found', [], []));
         }
         else {
             $responseDepartment = $this->serialize($department, "group2");
