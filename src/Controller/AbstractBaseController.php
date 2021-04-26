@@ -48,46 +48,6 @@ abstract class AbstractBaseController extends AbstractController
         return $this->apiProvider;
     }
 
-    /**
-     * Get response
-     *
-     * @return Response
-     */
-    public function getResponse(): Response
-    {
-        return $this->response;
-    }
-
-    /**
-     * Set response
-     *
-     * @param Response $response
-     */
-    public function setResponse(Response $response): void
-    {
-        $this->response = $response;
-    }
-
-    /**
-     * Get data
-     *
-     * @return array
-     */
-    public function getData(): ?array
-    {
-        return $this->data;
-    }
-
-    /**
-     * Set data
-     *
-     * @param array $data
-     */
-    public function setData(array $data): void
-    {
-        $this->data = $data;
-    }
-
     public function serialize($data, $groups)
     {
         $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
